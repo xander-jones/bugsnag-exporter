@@ -1,10 +1,14 @@
 package user
 
-import "encoding/json"
+import (
+	"encoding/json"
 
-func getUsersOrganizations(admin bool, perPage int) []map[string]interface{} {
+	"github.com/xander-jones/bugsnag-to-csv/pkg/common"
+)
+
+func GetUsersOrganizations(admin bool, perPage int) []map[string]interface{} {
 	// GET https://api.bugsnag.com/user/organizations?admin=&per_page=10
-	res := makeBugsnagDAAGet("https://api.bugsnag.com/user/organizations?admin=&per_page=10")
+	res := common.MakeBugsnagDAAGet("https://api.bugsnag.com/user/organizations?admin=&per_page=10")
 
 	var organizations []map[string]interface{}
 	json.Unmarshal([]byte(res), &organizations)

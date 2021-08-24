@@ -8,15 +8,14 @@ import (
 )
 
 var client = &http.Client{}
+var PersonalAuthToken = "" // Personal Auth Token "Go-API"
 
-const DAA_TOKEN = "e65783aa-bb55-4176-9080-19c101cf650f" // Personal Auth Token "Go-API"
-
-func makeBugsnagDAAGet(url string) []byte {
+func MakeBugsnagDAAGet(url string) []byte {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	req.Header.Add("Authorization", "token "+DAA_TOKEN)
+	req.Header.Add("Authorization", "token "+PersonalAuthToken)
 
 	res, err := client.Do(req)
 	if err != nil {
