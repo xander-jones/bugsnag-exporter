@@ -39,7 +39,11 @@ do
     printf "\33[2K\rBuilding binary %s of ${#os_archs[@]} ($os_arch)" $idx
     goos=${os_arch%/*}
     goarch=${os_arch#*/}
-    GOOS=${goos} GOARCH=${goarch} go build -o "./build/$os_arch/bugsnag-to-csv" main.go &> /dev/null
+    outputfile=./build/$os_arch/bugsnag-to-csv
+    if [ $goos == "windows" ]; then
+        outputfile="$outputfile.exe"
+    fi
+    GOOS=${goos} GOARCH=${goarch} go build -o $outputfile main.go &> /dev/null
     if [ $? -eq 0 ]
     then
         build_success+=(${os_arch})
