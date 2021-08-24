@@ -1,6 +1,7 @@
 # bugsnag-to-csv
 
 ![Go Workflow](https://github.com/xander-jones/bugsnag-to-csv/actions/workflows/go.yml/badge.svg)
+![Latest Stable Version](https://img.shields.io/github/v/release/xander-jones/bugsnag-to-csv)
 
 Tool for extracting data from Bugsnag's Data Access API and turning it into a CSV.
 
