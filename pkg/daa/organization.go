@@ -5,8 +5,9 @@ import (
 )
 
 func GetOrganizationsProjects(organization_id string, per_page int) []map[string]interface{} {
-	// GET https://api.bugsnag.com/organizations/organization_id/projects?q=MyProject&sort=created_at&direction=desc&per_page=30
-	res := MakeBugsnagDAAGet("https://api.bugsnag.com/organizations/" + organization_id + "/projects?per_page=10")
+	// Docs: https://bugsnagapiv2.docs.apiary.io/#reference/projects/projects/list-an-organization's-projects
+	//   GET https://api.bugsnag.com/organizations/organization_id/projects
+	res := MakeBugsnagDAAGet("https://api.bugsnag.com/organizations/" + organization_id + "/projects")
 	var projects []map[string]interface{}
 	json.Unmarshal([]byte(res), &projects)
 	return projects
