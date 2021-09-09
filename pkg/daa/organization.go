@@ -9,6 +9,6 @@ func GetOrganizationsProjects(organization_id string, per_page int) []map[string
 	//   GET https://api.bugsnag.com/organizations/organization_id/projects
 	res := MakeBugsnagDAAGet("https://api.bugsnag.com/organizations/" + organization_id + "/projects")
 	var projects []map[string]interface{}
-	json.Unmarshal([]byte(res), &projects)
+	json.Unmarshal([]byte(res.body), &projects)
 	return projects
 }

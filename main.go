@@ -33,7 +33,8 @@ func main() {
 	verbose := flag.Bool("verbose", false, "[Flag] Set the output to be verbose for debugging purposes.")
 	flag.Parse()
 
-	common.PrintHeader(verbose)
+	common.Verbose = *verbose
+	common.PrintHeader()
 
 	if *token == "" {
 		common.ExitWithError(1, "Missing token. Please supply Bugsnag personal auth token with --token flag")
@@ -70,8 +71,16 @@ func main() {
 				} else {
 					if *events {
 						common.Print("Downloading all events for projectId & errorId within filters")
+						events := daa.GetErrorEvents(*projectId, *errorId)
+						for _, event := range events {
+							common.Print(fmt.Sprint(event))
+						}
 					} else {
-						common.Print("Downloading errors from projectId & errorId within filters")
+						common.Print("Downloading error from projectId & errorId within filters")
+						errs := daa.GetError(*projectId, *errorId)
+						for _, err := range errs {
+							common.Print(fmt.Sprint(err))
+						}
 					}
 				}
 			}

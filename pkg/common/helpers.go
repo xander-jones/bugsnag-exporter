@@ -5,6 +5,8 @@ import (
 	"os"
 )
 
+var Verbose bool = false
+
 func ExitWithError(errorCode int, errorMessage string) {
 	Print("[ERROR] %s\n", errorMessage)
 	os.Exit(errorCode)
@@ -14,14 +16,14 @@ func Print(message string, args ...interface{}) {
 	fmt.Printf("[bugsnag-to-csv] "+message+"\r\n", args...)
 }
 
-func PrintVerbose(verbose *bool, message string, args ...interface{}) {
-	if *verbose {
+func PrintVerbose(message string, args ...interface{}) {
+	if Verbose {
 		Print(message, args)
 	}
 }
 
-func PrintHeader(verbose *bool) {
-	if *verbose {
+func PrintHeader() {
+	if Verbose {
 		Print("##################################################")
 		Print("#                                                #")
 		Print("#              Bugsnag-to-CSV, v%s            #", PackageVersion)
