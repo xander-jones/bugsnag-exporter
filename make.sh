@@ -1,6 +1,10 @@
 #!/bin/bash
-
+#
+# Builds binaries for all of the architectures and platforms listed
+# in `os_archs`, call `./make.sh` to run this bash script.
+#
 # https://github.com/golang/go/blob/master/src/go/build/syslist.go
+#
 
 os_archs=(
     darwin/386
@@ -25,7 +29,7 @@ os_archs=(
 build_success=()
 build_failures=()
 
-printf "Building bugsnag-to-csv binaries for the chosen platforms & architectures in ./build\r\n\r\n"
+printf "Building bugsnag-to-csv binaries in ./build for the chosen platforms & architectures\r\n\r\n"
 # clear out the ./build directory to begin with
 # and then recreate it so we have a fresh output.
 if [ -d "build" ]; then

@@ -9,6 +9,14 @@ Tool for extracting data from Bugsnag's Data Access API and turning it into a CS
 
 ## Usage
 
+### Using source
+
+```
+go run main.go [params]
+```
+
+### Using the binary
+
 ```
 ./build/darwin/amd64/bugsnag-to-csv --help
 Usage of ./build/darwin/amd64/bugsnag-to-csv:
