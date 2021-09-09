@@ -12,13 +12,13 @@ Tool for extracting data from Bugsnag's Data Access API and turning it into a CS
 ### Using source
 
 ```
-go run main.go [params]
+$ go run main.go [params]
 ```
 
 ### Using the binary
 
 ```
-./build/darwin/amd64/bugsnag-to-csv --help
+$ ./build/darwin/amd64/bugsnag-to-csv --help
 Usage of ./build/darwin/amd64/bugsnag-to-csv:
   -show-project-ids
         Use this flag to get a list of project IDs accessible with your token.
