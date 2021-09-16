@@ -37,7 +37,7 @@ func main() {
 	common.PrintHeader()
 
 	if *token == "" {
-		common.ExitWithError(1, "Missing token. Please supply Bugsnag personal auth token with --token flag")
+		common.ExitWithString(1, "Missing token. Please supply Bugsnag personal auth token with --token flag")
 	} else {
 		daa.PersonalAuthToken = *token
 		if *getProjectIds {
@@ -52,35 +52,39 @@ func main() {
 			}
 		} else {
 			if *projectId == "" {
-				common.ExitWithError(1, "Missing Project ID. Please supply a Project ID with --project-id flag")
+				common.ExitWithString(2, "Missing Project ID. Please supply a Project ID with --project-id flag")
 			} else {
 				if *errorId == "" {
 					if *events {
 						common.Print("Downloading all events for projectId within filters")
 						events := daa.GetProjectEvents(*projectId)
-						for _, event := range events {
-							common.Print(fmt.Sprint(event))
-						}
+						// for _, event := range events {
+						// 	common.Print(fmt.Sprint(event))
+						// }
+						common.Print("Got %d events", len(events))
 					} else {
 						common.Print("Downloading all errors from projectId within filters")
 						errs := daa.GetProjectErrors(*projectId)
-						for _, err := range errs {
-							common.Print(fmt.Sprint(err))
-						}
+						// for _, err := range errs {
+						// 	common.Print(fmt.Sprint(err))
+						// }
+						common.Print("Got %d errors", len(errs))
 					}
 				} else {
 					if *events {
 						common.Print("Downloading all events for projectId & errorId within filters")
 						events := daa.GetErrorEvents(*projectId, *errorId)
-						for _, event := range events {
-							common.Print(fmt.Sprint(event))
-						}
+						// for _, event := range events {
+						// 	common.Print(fmt.Sprint(event))
+						// }
+						common.Print("Got %d events", len(events))
 					} else {
 						common.Print("Downloading error from projectId & errorId within filters")
 						errs := daa.GetError(*projectId, *errorId)
-						for _, err := range errs {
-							common.Print(fmt.Sprint(err))
-						}
+						// for _, err := range errs {
+						// 	common.Print(fmt.Sprint(err))
+						// }
+						common.Print("Got %d errors", len(errs))
 					}
 				}
 			}
