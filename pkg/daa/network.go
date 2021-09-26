@@ -103,9 +103,9 @@ func MakeBugsnagDAAGet(url string) BugsnagDAAResponse {
 		common.PrintVerbose("[HTTP Error] Non HTTP/200 response received: " + res.Status)
 	}
 	// TODO: Handle HTTP/429 backoff response.
-	parseHeaderInt(res.Header["X-Ratelimit-Limit"], 1001, &response.rateLimit.limit)
-	parseHeaderInt(res.Header["X-Ratelimit-Remaining"], 1002, &response.rateLimit.remaining)
-	parseHeaderInt(res.Header["X-Total-Count"], 1003, &response.xTotalCount)
+	response.rateLimit.limit = parseHeaderInt(res.Header["X-Ratelimit-Limit"])
+	response.rateLimit.remaining = parseHeaderInt(res.Header["X-Ratelimit-Remaining"])
+	response.xTotalCount = parseHeaderInt(res.Header["X-Total-Count"])
 
 	response.retryAfter = canonicalHeader(res.Header["Retry-After"])
 	response.link = parseNextHeader(res.Header["Link"])
@@ -114,13 +114,20 @@ func MakeBugsnagDAAGet(url string) BugsnagDAAResponse {
 	return response
 }
 
-// Parse a header string number into an int64, throwing an error
-// if an integer conversion does not succeed.
-func parseHeaderInt(headerValuesArray []string, errorCode int, outputPtr *int64) {
-	var err error
-	*outputPtr, err = strconv.ParseInt(canonicalHeader(headerValuesArray), 10, 64)
-	if err != nil {
-		common.ExitWithErrorAndString(errorCode, err, "An API response header returned an unexpected non-integer value")
+// Parse a header string number into an int64, throwing an error if an
+// integer conversion does not succeed. Returns -1 if the header is empty
+func parseHeaderInt(headerValuesArray []string) int64 {
+	canonicalHeader := canonicalHeader(headerValuesArray)
+	if canonicalHeader == "" {
+		return -1
+	} else {
+		headerValue, err := strconv.ParseInt(canonicalHeader, 10, 64)
+		if err != nil {
+			common.ExitWithErrorAndString(1000, err, "An API response header returned an unexpected non-integer value")
+			return -1 // unreachable, but compiler static analysis fails otherwise
+		} else {
+			return headerValue
+		}
 	}
 }
 
