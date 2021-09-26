@@ -1,13 +1,11 @@
 package daa
 
-import (
-	"encoding/json"
-)
+import "github.com/xander-jones/bugsnag-to-csv/pkg/common"
 
 func GetUsersOrganizations(admin bool, perPage int) []map[string]interface{} {
-	// GET https://api.bugsnag.com/user/organizations?admin=&per_page=10
-	res := MakeBugsnagDAAGet("https://api.bugsnag.com/user/organizations?admin=&per_page=10")
-	var organizations []map[string]interface{}
-	json.Unmarshal([]byte(res.body), &organizations)
+	// GET https://api.bugsnag.com/user/organizations
+	var url string = "https://api.bugsnag.com/user/organizations"
+	common.PrintVerbose("Getting user's organizations from API: " + url)
+	var organizations []map[string]interface{} = BugsnagGetAllElements(url)
 	return organizations
 }
