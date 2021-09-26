@@ -1,6 +1,7 @@
 package daa
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -39,6 +40,42 @@ func PrintHeaders(res BugsnagDAAResponse) {
 var client = &http.Client{}
 var PersonalAuthToken = "" // Personal Auth Token "Go-API"
 
+/*
+	Makes repeat calls to the Bugsnag Data Access API to fetch data, following
+	`next` links until there are no more links to follow.
+*/
+func BugsnagGetAllElements(url string) []map[string]interface{} {
+	var res BugsnagDAAResponse
+	var events []map[string]interface{}
+
+	for {
+		res = MakeBugsnagDAAGet(url)
+		PrintHeaders(res)
+
+		var unmarshall_body []map[string]interface{}
+		err := json.Unmarshal([]byte(res.body), &unmarshall_body)
+		if err != nil {
+			common.ExitWithErrorAndString(999, err, "JSON Unmarshalling failed")
+		} else {
+			events = append(events, unmarshall_body...)
+		}
+
+		if res.link.url != "" && res.link.rel == "next" {
+			url = res.link.url
+		} else {
+			break
+		}
+	}
+
+	return events
+}
+
+/*
+	Makes a single call to the Bugsnag Data Access API based on the url provided. When
+		the data rate limit is reached, backs off until it can continue making calls.
+	Returns a `BugsnagDAAResponse` object which contains important headers, and the
+		marshalled JSON body (in []byte form)
+*/
 func MakeBugsnagDAAGet(url string) BugsnagDAAResponse {
 	var response BugsnagDAAResponse
 
@@ -65,6 +102,7 @@ func MakeBugsnagDAAGet(url string) BugsnagDAAResponse {
 	} else {
 		common.PrintVerbose("[HTTP Error] Non HTTP/200 response received: " + res.Status)
 	}
+	// TODO: Handle HTTP/429 backoff response.
 	parseHeaderInt(res.Header["X-Ratelimit-Limit"], 1001, &response.rateLimit.limit)
 	parseHeaderInt(res.Header["X-Ratelimit-Remaining"], 1002, &response.rateLimit.remaining)
 	parseHeaderInt(res.Header["X-Total-Count"], 1003, &response.xTotalCount)

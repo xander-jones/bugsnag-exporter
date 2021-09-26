@@ -1,8 +1,6 @@
 package daa
 
 import (
-	"encoding/json"
-
 	"github.com/xander-jones/bugsnag-to-csv/pkg/common"
 )
 
@@ -11,12 +9,8 @@ func GetProjectErrors(project_id string) []map[string]interface{} {
 	//   GET https://api.bugsnag.com/projects/project_id/errors
 	url := "https://api.bugsnag.com/projects/" + project_id + "/errors"
 	common.PrintVerbose("Getting errors from API: " + url)
-	res := MakeBugsnagDAAGet(url)
-	PrintHeaders(res)
-
-	var errors []map[string]interface{}
-	json.Unmarshal([]byte(res.body), &errors)
-	return errors
+	var errs []map[string]interface{} = BugsnagGetAllElements(url)
+	return errs
 }
 
 func GetProjectEvents(project_id string) []map[string]interface{} {
@@ -24,10 +18,6 @@ func GetProjectEvents(project_id string) []map[string]interface{} {
 	//   GET https://api.bugsnag.com/projects/project_id/events
 	url := "https://api.bugsnag.com/projects/" + project_id + "/events"
 	common.PrintVerbose("Getting events from API: " + url)
-	res := MakeBugsnagDAAGet(url)
-	PrintHeaders(res)
-
-	var events []map[string]interface{}
-	json.Unmarshal([]byte(res.body), &events)
+	var events []map[string]interface{} = BugsnagGetAllElements(url)
 	return events
 }
