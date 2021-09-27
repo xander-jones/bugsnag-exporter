@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"time"
 
 	"github.com/xander-jones/bugsnag-to-csv/pkg/common"
 )
@@ -15,9 +16,10 @@ import (
 type BugsnagDAAResponse struct {
 	body        []byte              // the JSON body response
 	rateLimit   BugsnagDAARateLimit // The number of API calls that can be made per minute
-	retryAfter  string              // The datetime stamp of when a retry should be made (rate limit refresh)
+	retryAfter  int64               // The datetime stamp of when a retry should be made (rate limit refresh)
 	link        BugsnagDAANextLink  // The link for the next set of data, if it exists
 	xTotalCount int64               // The total number of errors or event objects in this search
+	status      int64               // The response status code from the Bugsnag DAA
 }
 type BugsnagDAARateLimit struct {
 	limit     int64
@@ -51,19 +53,23 @@ func BugsnagGetAllElements(url string) []map[string]interface{} {
 	for {
 		res = MakeBugsnagDAAGet(url)
 		PrintHeaders(res)
+		if res.status == 429 {
+			common.PrintVerbose("Sleeping for " + fmt.Sprint(res.retryAfter) + " seconds")
+			time.Sleep(time.Duration(res.retryAfter) * time.Second)
+		} else if res.status == 200 {
+			var unmarshall_body []map[string]interface{}
+			err := json.Unmarshal([]byte(res.body), &unmarshall_body)
+			if err != nil {
+				common.ExitWithErrorAndString(999, err, "JSON Unmarshalling failed")
+			} else {
+				events = append(events, unmarshall_body...)
+			}
 
-		var unmarshall_body []map[string]interface{}
-		err := json.Unmarshal([]byte(res.body), &unmarshall_body)
-		if err != nil {
-			common.ExitWithErrorAndString(999, err, "JSON Unmarshalling failed")
-		} else {
-			events = append(events, unmarshall_body...)
-		}
-
-		if res.link.url != "" && res.link.rel == "next" {
-			url = res.link.url
-		} else {
-			break
+			if res.link.url != "" && res.link.rel == "next" {
+				url = res.link.url
+			} else {
+				break
+			}
 		}
 	}
 
@@ -125,7 +131,7 @@ func parseHeaderInt(headerValuesArray []string) int64 {
 	} else {
 		headerValue, err := strconv.ParseInt(canonicalHeader, 10, 64)
 		if err != nil {
-			common.ExitWithErrorAndString(1000, err, "An API response header returned an unexpected non-integer value")
+			common.ExitWithErrorAndString(0, err, "An API response header returned an unexpected non-integer value")
 			return -1 // unreachable, but compiler static analysis fails otherwise
 		} else {
 			return headerValue
@@ -149,11 +155,13 @@ func canonicalHeader(headerValuesArray []string) string {
 /*
 	Extract the next link and which direction it goes in relation to the current URL
 */
-func parseNextHeader(headerValuesArray []string) BugsnagDAANextLink {
+// TODO: make understand links like:
+// {https://api.bugsnag.com/organizations/5919dd35488ed9001b53f3c3/projects?direction=desc&offset%!B(MISSING)null_sort_field%!D(MISSING)=false&offset%!B(MISSING)sort_field_offset%!D(MISSING)=60ab55a5c4fdc30014952c68&per_page=30&sort=created_at>; rel="next",<https://api.bugsnag.com/organizations/5919dd35488ed9001b53f3c3/projects?direction=desc&per_page=30&sort=created_at prev}
+func parseHeaderNext(headerValuesArray []string) BugsnagDAANextLink {
 	header := canonicalHeader(headerValuesArray)
 	var rtn BugsnagDAANextLink
 	if len(header) > 0 {
-		r, _ := regexp.Compile("<(http[s]://api.bugsnag.com/.*)>; rel=\"(next|prev)\"")
+		r, _ := regexp.Compile("<(https://api.bugsnag.com/[^\"]*)>; rel=\"(next|prev)\"")
 		matches := r.FindAllStringSubmatch(header, -1)
 		rtn.url = matches[0][1]
 		rtn.rel = matches[0][2]
