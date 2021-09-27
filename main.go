@@ -29,7 +29,8 @@ func main() {
 	errorId := flag.String("error-id", "", "[String] An error ID to download. If provided, downloads all events within filters for this error ID")
 	events := flag.Bool("events", false, "[Flag] Download events rather than error groups when this flag is enabled (will connsume a lot more data)")
 	//outputFilepath := flag.String("output-file", "", "[String] Filepath to store the downloaded CSV.")
-	//filters := flag.String("filters", "", "A JSON string array of filters to apply")
+	//filters := flag.String("filters", "", "[String] A JSON string array of filters to apply")
+	//rateLimit := flag.Int("rate-limit", 0, "[Int] Set the number of calls to make per minute. Defaults to 0, no rate limit")
 	verbose := flag.Bool("verbose", false, "[Flag] Set the output to be verbose for debugging purposes.")
 	flag.Parse()
 
