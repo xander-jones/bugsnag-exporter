@@ -19,6 +19,7 @@ func main() {
 			"github.com/xander-jones/bugsnag-to-csv",
 			"github.com/xander-jones/bugsnag-to-csv/common",
 			"github.com/xander-jones/bugsnag-to-csv/daa",
+			"github.com/xander-jones/bugsnag-to-csv/writers",
 		},
 		Synchronous: true,
 	})
