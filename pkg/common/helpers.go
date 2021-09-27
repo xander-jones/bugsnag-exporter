@@ -44,7 +44,7 @@ func ExitWithErrorAndString(errorCode int, err error, errorMessage string) {
 	after the initial message so you can treat this as a Sprintf()
 */
 func Print(message string, args ...interface{}) {
-	fmt.Printf("[bugsnag-to-csv] "+message+"\r\n", args...)
+	fmt.Printf("[bugsnag-exporter] "+message+"\r\n", args...)
 }
 
 /*
@@ -62,12 +62,12 @@ func PrintVerbose(message string, args ...interface{}) {
 */
 func PrintHeader() {
 	if Verbose {
-		Print("##################################################")
-		Print("#                                                #")
-		Print("#              Bugsnag-to-CSV, v%s            #", PackageVersion)
-		Print("#                Xander Jones, 2021              #")
-		Print("# https://github.com/xander-jones/bugsnag-to-csv #")
-		Print("#                                                #")
-		Print("##################################################")
+		Print("####################################################")
+		Print("#                                                  #")
+		Print("#              bugsnag-exporter, v%s            #", PackageVersion)
+		Print("#                Xander Jones, 2021                #")
+		Print("# https://github.com/xander-jones/bugsnag-exporter #")
+		Print("#                                                  #")
+		Print("####################################################")
 	}
 }

@@ -1,6 +1,6 @@
 package daa
 
-import "github.com/xander-jones/bugsnag-to-csv/pkg/common"
+import "github.com/xander-jones/bugsnag-exporter/pkg/common"
 
 func GetUsersOrganizations(admin bool, perPage int) []map[string]interface{} {
 	// GET https://api.bugsnag.com/user/organizations

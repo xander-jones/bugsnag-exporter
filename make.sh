@@ -29,7 +29,7 @@ os_archs=(
 build_success=()
 build_failures=()
 
-printf "Building bugsnag-to-csv binaries in ./build for the chosen platforms & architectures\r\n\r\n"
+printf "Building bugsnag-exporter binaries in ./build for the chosen platforms & architectures\r\n\r\n"
 # clear out the ./build directory to begin with
 # and then recreate it so we have a fresh output.
 if [ -d "build" ]; then
@@ -43,7 +43,7 @@ do
     printf "\33[2K\rBuilding binary %s of ${#os_archs[@]} ($os_arch)" $idx
     goos=${os_arch%/*}
     goarch=${os_arch#*/}
-    outputfile=./build/$os_arch/bugsnag-to-csv
+    outputfile=./build/$os_arch/bugsnag-exporter
     if [ $goos == "windows" ]; then
         outputfile="$outputfile.exe"
     fi

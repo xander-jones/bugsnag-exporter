@@ -1,7 +1,7 @@
-# bugsnag-to-csv
+# bugsnag-exporter
 
-![Go Workflow](https://github.com/xander-jones/bugsnag-to-csv/actions/workflows/go.yml/badge.svg)
-![Latest Stable Version](https://img.shields.io/github/v/release/xander-jones/bugsnag-to-csv)
+![Go Workflow](https://github.com/xander-jones/bugsnag-exporter/actions/workflows/go.yml/badge.svg)
+![Latest Stable Version](https://img.shields.io/github/v/release/xander-jones/bugsnag-exporter)
 
 Tool for extracting data from Bugsnag's Data Access API and turning it into a CSV.
 
@@ -18,8 +18,8 @@ $ go run main.go [params]
 ### Using the binary
 
 ```
-$ ./build/darwin/amd64/bugsnag-to-csv --help
-Usage of ./build/darwin/amd64/bugsnag-to-csv:
+$ ./build/darwin/amd64/bugsnag-exporter --help
+Usage of ./build/darwin/amd64/bugsnag-exporter:
   -show-project-ids
         Use this flag to get a list of project IDs accessible with your token.
   -token string

@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/bugsnag/bugsnag-go/v2"
-	"github.com/xander-jones/bugsnag-to-csv/pkg/common"
-	"github.com/xander-jones/bugsnag-to-csv/pkg/daa"
+	"github.com/xander-jones/bugsnag-exporter/pkg/common"
+	"github.com/xander-jones/bugsnag-exporter/pkg/daa"
 )
 
 func main() {
@@ -16,10 +16,10 @@ func main() {
 		ReleaseStage: "development",
 		ProjectPackages: []string{
 			"main",
-			"github.com/xander-jones/bugsnag-to-csv",
-			"github.com/xander-jones/bugsnag-to-csv/common",
-			"github.com/xander-jones/bugsnag-to-csv/daa",
-			"github.com/xander-jones/bugsnag-to-csv/writers",
+			"github.com/xander-jones/bugsnag-exporter",
+			"github.com/xander-jones/bugsnag-exporter/common",
+			"github.com/xander-jones/bugsnag-exporter/daa",
+			"github.com/xander-jones/bugsnag-exporter/writers",
 		},
 		Synchronous: true,
 	})
@@ -32,6 +32,8 @@ func main() {
 	//outputFilepath := flag.String("output-file", "", "[String] Filepath to store the downloaded CSV.")
 	//filters := flag.String("filters", "", "[String] A JSON string array of filters to apply")
 	//rateLimit := flag.Int("rate-limit", 0, "[Int] Set the number of calls to make per minute. Defaults to 0, no rate limit")
+	//use_json := flag.Bool("json", true, "[Flag] Output data to file as JSON. Default true")
+	//use_csv := flag.Bool("csv", false, "[Flag] Output data to file as JSON. Default false")
 	verbose := flag.Bool("verbose", false, "[Flag] Set the output to be verbose for debugging purposes.")
 	flag.Parse()
 

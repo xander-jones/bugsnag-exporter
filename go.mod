@@ -1,4 +1,4 @@
-module github.com/xander-jones/bugsnag-to-csv
+module github.com/xander-jones/bugsnag-exporter
 
 go 1.16
 

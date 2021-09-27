@@ -1,7 +1,7 @@
 package daa
 
 import (
-	"github.com/xander-jones/bugsnag-to-csv/pkg/common"
+	"github.com/xander-jones/bugsnag-exporter/pkg/common"
 )
 
 func GetProjectErrors(project_id string) []map[string]interface{} {
