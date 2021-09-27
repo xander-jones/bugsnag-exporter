@@ -97,18 +97,20 @@ func MakeBugsnagDAAGet(url string) BugsnagDAAResponse {
 	// for key, values := range res.Header {
 	// 	fmt.Printf("%s: %v\n", key, values)
 	// }
-	if res.StatusCode == 200 {
-		common.PrintVerbose("[HTTP Success] HTTP/200 response received")
+	response.status = int64(res.StatusCode)
+	if res.StatusCode >= 200 && res.StatusCode <= 299 {
+		common.PrintVerbose("[HTTP " + fmt.Sprint(res.StatusCode) + "] Success response received (" + res.Status + ")")
+	} else if res.StatusCode == 429 {
+		common.PrintVerbose("[HTTP 429] need to back-off")
 	} else {
-		common.PrintVerbose("[HTTP Error] Non HTTP/200 response received: " + res.Status)
+		common.PrintVerbose("[HTTP " + fmt.Sprint(res.StatusCode) + "] Error response received: " + res.Status)
 	}
 	// TODO: Handle HTTP/429 backoff response.
 	response.rateLimit.limit = parseHeaderInt(res.Header["X-Ratelimit-Limit"])
 	response.rateLimit.remaining = parseHeaderInt(res.Header["X-Ratelimit-Remaining"])
 	response.xTotalCount = parseHeaderInt(res.Header["X-Total-Count"])
-
-	response.retryAfter = canonicalHeader(res.Header["Retry-After"])
-	response.link = parseNextHeader(res.Header["Link"])
+	response.retryAfter = parseHeaderInt(res.Header["Retry-After"])
+	response.link = parseHeaderNext(res.Header["Link"])
 	response.body = body
 
 	return response
