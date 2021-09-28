@@ -48,7 +48,7 @@ var PersonalAuthToken = "" // Personal Auth Token "Go-API"
 */
 func BugsnagGetAllElements(url string) []map[string]interface{} {
 	var res BugsnagDAAResponse
-	var events []map[string]interface{}
+	var elements []map[string]interface{}
 
 	for {
 		res = MakeBugsnagDAAGet(url)
@@ -62,9 +62,8 @@ func BugsnagGetAllElements(url string) []map[string]interface{} {
 			if err != nil {
 				common.ExitWithErrorAndString(999, err, "JSON Unmarshalling failed")
 			} else {
-				events = append(events, unmarshall_body...)
+				elements = append(elements, unmarshall_body...)
 			}
-
 			if res.link.url != "" && res.link.rel == "next" {
 				url = res.link.url
 			} else {
@@ -73,7 +72,7 @@ func BugsnagGetAllElements(url string) []map[string]interface{} {
 		}
 	}
 
-	return events
+	return elements
 }
 
 /*
