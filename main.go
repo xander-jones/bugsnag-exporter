@@ -25,10 +25,11 @@ func main() {
 	})
 
 	token := flag.String("token", "", "[REQUIRED][String] Your Bugsnag personal auth token.")
-	getProjectIds := flag.Bool("show-project-ids", false, "[Flag] Use this flag to get a list of project IDs accessible with your token.")
+	getProjectIds := flag.Bool("show-project-ids", false, "[Flag] Use this flag to get a list of project IDs accessible with your token. Overrides any other flags")
 	projectId := flag.String("project-id", "", "[String] The Project ID you wish to download from")
 	errorId := flag.String("error-id", "", "[String] An error ID to download. If provided, downloads all events within filters for this error ID")
-	events := flag.Bool("events", false, "[Flag] Download events rather than error groups when this flag is enabled (will connsume a lot more data)")
+	events := flag.Bool("events", false, "[Flag] Download events rather than error groups when this flag is enabled. Requires --project-id (and optionally --error-id)")
+	//affectedUsers := flag.Bool("affected-users", false, "[Flag] Download a list of users affected by a specific error. Requires --project-id and --error-id")
 	//outputFilepath := flag.String("output-file", "", "[String] Filepath to store the downloaded CSV.")
 	//filters := flag.String("filters", "", "[String] A JSON string array of filters to apply")
 	//rateLimit := flag.Int("rate-limit", 0, "[Int] Set the number of calls to make per minute. Defaults to 0, no rate limit")
