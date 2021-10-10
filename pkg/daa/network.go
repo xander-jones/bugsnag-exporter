@@ -31,7 +31,7 @@ type BugsnagDAANextLink struct {
 	rel string // The direction of the link. Can be `next` or `prev`
 }
 
-func PrintHeaders(res BugsnagDAAResponse) {
+func PrintHttpHeaders(res BugsnagDAAResponse) {
 	common.PrintVerbose("X-Total-Count: " + fmt.Sprint(res.xTotalCount))
 	common.PrintVerbose("Ratelimit:     " + fmt.Sprint(res.rateLimit.limit))
 	common.PrintVerbose("Remaining:     " + fmt.Sprint(res.rateLimit.remaining))
@@ -52,7 +52,8 @@ func BugsnagGetAllElements(url string) []map[string]interface{} {
 
 	for {
 		res = MakeBugsnagDAAGet(url)
-		PrintHeaders(res)
+		// TODO: Calculate whether this call will take > 10 calls overall, and warn based on common.NoWarn flag status.
+		PrintHttpHeaders(res)
 		if res.status == 429 {
 			common.PrintVerbose("Sleeping for " + fmt.Sprint(res.retryAfter) + " seconds")
 			time.Sleep(time.Duration(res.retryAfter) * time.Second)
@@ -110,7 +111,7 @@ func MakeBugsnagDAAGet(url string) BugsnagDAAResponse {
 	} else {
 		common.PrintVerbose("[HTTP " + fmt.Sprint(res.StatusCode) + "] Error response received: " + res.Status)
 	}
-	// TODO: Handle HTTP/429 backoff response.
+
 	response.rateLimit.limit = parseHeaderInt(res.Header["X-Ratelimit-Limit"])
 	response.rateLimit.remaining = parseHeaderInt(res.Header["X-Ratelimit-Remaining"])
 	response.xTotalCount = parseHeaderInt(res.Header["X-Total-Count"])
