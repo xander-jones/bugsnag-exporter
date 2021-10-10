@@ -7,16 +7,22 @@ import (
 	"github.com/xander-jones/bugsnag-exporter/pkg/common"
 )
 
-func CreateNewOutputFile(filename string) *os.File {
+func CreateNewOutputFile(projectId string, filename string) *os.File {
+	var outputDirpath string = filepath.Join(common.OutputDir, projectId)
+	common.PrintVerbose("Setting up directory '" + outputDirpath + "' to download data to")
+	err := os.MkdirAll(outputDirpath, os.ModePerm)
+	if err != nil {
+		common.ExitWithError(1, err)
+	}
 	var handle *os.File
 	var outputFilepath string
 	if common.UseCsv {
-		outputFilepath = filepath.Join(common.OutputDir, filename+".csv")
+		outputFilepath = filepath.Join(common.OutputDir, projectId, filename+".csv")
 	} else {
-		outputFilepath = filepath.Join(common.OutputDir, filename+".json")
+		outputFilepath = filepath.Join(common.OutputDir, projectId, filename+".json")
 	}
 	common.PrintVerbose("Creating file " + outputFilepath)
-	handle, err := os.Create(outputFilepath)
+	handle, err = os.Create(outputFilepath)
 	if err != nil {
 		common.ExitWithError(1, err)
 	} else {

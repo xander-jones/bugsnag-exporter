@@ -30,7 +30,7 @@ func main() {
 	errorId := flag.String("error-id", "", "[String] An error ID to download. If provided, downloads all events within filters for this error ID")
 	events := flag.Bool("events", false, "[Flag] Download events rather than error groups when this flag is enabled. Requires --project-id (and optionally --error-id)")
 	//affectedUsers := flag.Bool("affected-users", false, "[Flag] Download a list of users affected by a specific error. Requires --project-id and --error-id")
-	outputDir := flag.String("output-dir", "./", "[String] Directory to store the downloaded file")
+	outputDir := flag.String("output-dir", "./data", "[String] Directory to store the downloaded file")
 	//filters := flag.String("filters", "", "[String] A JSON string array of filters to apply")
 	//rateLimit := flag.Int("rate-limit", 0, "[Int] Set the number of calls to make per minute. Defaults to 0, no rate limit")
 	minimalReports := flag.Bool("minimal", false, "[Flag] Download minimal event reports only for smaller file sizes")
@@ -51,10 +51,10 @@ func main() {
 		daa.PersonalAuthToken = *token
 		if *getProjectIds {
 			common.Print("Getting your project IDs with provided token")
-			orgs := daa.GetUsersOrganizations(false, 30)
+			orgs := daa.GetUsersOrganizations()
 			for _, org := range orgs {
 				common.Print("Organization: " + fmt.Sprint(org["name"]) + " [" + fmt.Sprint(org["id"]) + "]")
-				projects := daa.GetOrganizationsProjects(org["id"].(string), 10)
+				projects := daa.GetOrganizationsProjects(org["id"].(string))
 				for _, proj := range projects {
 					common.Print("  > " + fmt.Sprint(proj["name"]) + " [" + fmt.Sprint(proj["id"]) + "]")
 				}
