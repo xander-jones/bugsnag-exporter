@@ -12,6 +12,26 @@ import (
 var Verbose bool = false
 
 /*
+	Variable to control whether a warning is given
+	if more than 10 API calls will be required to complete
+	an operation. 10 API calls would encounter rate limiting
+	under normal conditions.
+*/
+var NoWarn bool = false
+
+/*
+	Variable to control whether we output as a JSON file
+	or as a CSV. JSON is preferable as data in Bugsnag events is
+	complex and does not suit CSVs well.
+*/
+var UseCsv bool = false
+
+/*
+	Variable to store the output directory to store the files created
+*/
+var OutputDir string = "./"
+
+/*
 	Exits the application with the error code given after
 	printing an error message string to the console.
 */

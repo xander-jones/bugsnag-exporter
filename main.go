@@ -30,16 +30,19 @@ func main() {
 	errorId := flag.String("error-id", "", "[String] An error ID to download. If provided, downloads all events within filters for this error ID")
 	events := flag.Bool("events", false, "[Flag] Download events rather than error groups when this flag is enabled. Requires --project-id (and optionally --error-id)")
 	//affectedUsers := flag.Bool("affected-users", false, "[Flag] Download a list of users affected by a specific error. Requires --project-id and --error-id")
-	//outputFilepath := flag.String("output-file", "", "[String] Filepath to store the downloaded CSV.")
+	outputDir := flag.String("output-dir", "./", "[String] Directory to store the downloaded file.")
 	//filters := flag.String("filters", "", "[String] A JSON string array of filters to apply")
 	//rateLimit := flag.Int("rate-limit", 0, "[Int] Set the number of calls to make per minute. Defaults to 0, no rate limit")
-	//use_json := flag.Bool("json", true, "[Flag] Output data to file as JSON. Default true")
-	//use_csv := flag.Bool("csv", false, "[Flag] Output data to file as JSON. Default false")
+	//fullReport := flag.Bool("full-report", false, "[Flag] Download full reports for each event if available")
+	useCsv := flag.Bool("csv", false, "[Flag] Output data to file as CSV. Default false, noramally outputs as JSON")
+	noWarn := flag.Bool("no-warn", false, "[Flag] Don't warn me if this call will take more than 10 calls to the API")
 	verbose := flag.Bool("verbose", false, "[Flag] Set the output to be verbose for debugging purposes.")
 	flag.Parse()
 
 	common.Verbose = *verbose
-	common.PrintHeader()
+	common.NoWarn = *noWarn
+	common.UseCsv = *useCsv
+	common.OutputDir = *outputDir
 
 	if *token == "" {
 		common.ExitWithString(1, "Missing token. Please supply Bugsnag personal auth token with --token flag")
