@@ -39,21 +39,26 @@ func PrintHttpHeaders(res BugsnagDAAResponse) {
 	common.PrintVerbose("Retry-After:   " + fmt.Sprint(res.retryAfter))
 }
 
+func PrintHttpBody(res BugsnagDAAResponse) {
+	common.PrintVerbose(string(res.body))
+}
+
 var client = &http.Client{}
 var PersonalAuthToken = "" // Personal Auth Token "Go-API"
 
 /*
 	Makes repeat calls to the Bugsnag Data Access API to fetch data, following
 	`next` links until there are no more links to follow.
+
+	This function is only used if the expected response is going to be an array,
+	else use BugsnagGetObject()
 */
-func BugsnagGetAllElements(url string) []map[string]interface{} {
+func BugsnagGetArray(url string) []map[string]interface{} {
 	var res BugsnagDAAResponse
 	var elements []map[string]interface{}
-
 	for {
 		res = MakeBugsnagDAAGet(url)
 		// TODO: Calculate whether this call will take > 10 calls overall, and warn based on common.NoWarn flag status.
-		PrintHttpHeaders(res)
 		if res.status == 429 {
 			common.PrintVerbose("Sleeping for " + fmt.Sprint(res.retryAfter) + " seconds")
 			time.Sleep(time.Duration(res.retryAfter) * time.Second)
@@ -61,7 +66,7 @@ func BugsnagGetAllElements(url string) []map[string]interface{} {
 			var unmarshall_body []map[string]interface{}
 			err := json.Unmarshal([]byte(res.body), &unmarshall_body)
 			if err != nil {
-				common.ExitWithErrorAndString(999, err, "JSON Unmarshalling failed")
+				common.ExitWithErrorAndString(1, err, "JSON Unmarshalling failed")
 			} else {
 				elements = append(elements, unmarshall_body...)
 			}
@@ -72,8 +77,29 @@ func BugsnagGetAllElements(url string) []map[string]interface{} {
 			}
 		}
 	}
-
 	return elements
+}
+
+/*
+	Makes call to the Bugsnag Data Access API to fetch data, this won't return
+	a `next` link as this should be a single object only, not an array
+
+	To get an array of elements, use BugsnagGetArray()
+*/
+func BugsnagGetObject(url string) map[string]interface{} {
+	var res BugsnagDAAResponse
+	var element map[string]interface{}
+	res = MakeBugsnagDAAGet(url)
+	if res.status == 429 {
+		common.PrintVerbose("Sleeping for " + fmt.Sprint(res.retryAfter) + " seconds")
+		time.Sleep(time.Duration(res.retryAfter) * time.Second)
+	} else if res.status == 200 {
+		err := json.Unmarshal([]byte(res.body), &element)
+		if err != nil {
+			common.ExitWithErrorAndString(1, err, "JSON Unmarshalling failed")
+		}
+	}
+	return element
 }
 
 /*
@@ -100,9 +126,7 @@ func MakeBugsnagDAAGet(url string) BugsnagDAAResponse {
 	if err != nil {
 		common.ExitWithError(1000, err)
 	}
-	// for key, values := range res.Header {
-	// 	fmt.Printf("%s: %v\n", key, values)
-	// }
+
 	response.status = int64(res.StatusCode)
 	if res.StatusCode >= 200 && res.StatusCode <= 299 {
 		common.PrintVerbose("[HTTP " + fmt.Sprint(res.StatusCode) + "] Success response received (" + res.Status + ")")
@@ -118,6 +142,12 @@ func MakeBugsnagDAAGet(url string) BugsnagDAAResponse {
 	response.retryAfter = parseHeaderInt(res.Header["Retry-After"])
 	response.link = parseHeaderNext(res.Header["Link"])
 	response.body = body
+
+	// Prints important HTTP headers if running in verbose mode only.
+	PrintHttpHeaders(response)
+
+	// Prints the body of the response
+	PrintHttpBody(response)
 
 	return response
 }

@@ -19,22 +19,31 @@ func CreateNewOutputFile(filename string) *os.File {
 	handle, err := os.Create(outputFilepath)
 	if err != nil {
 		common.ExitWithError(1, err)
-		return nil
 	} else {
 		return handle
 	}
+	return nil
 }
 
-func WriteToFile(handle *os.File, data []map[string]interface{}) {
+func WriteObjectToFile(handle *os.File, element map[string]interface{}) {
+	common.PrintVerbose("Writing object to output file '" + handle.Name() + "'")
 	if common.UseCsv {
-		// TODO: Implement CSV handling. This should take the top level JSON keys as columns,
-		//       and then store for each element in the top level array the value as a flat string
-		//writeToCsv(handle, data)
+		//writeObjectToCsvFile(handle, element)
 	} else {
-		writeToJsonFile(handle, data)
+		writeObjectToJsonFile(handle, element)
+	}
+}
+
+func WriteArrayToFile(handle *os.File, elements []map[string]interface{}) {
+	common.PrintVerbose("Writing array to output file '" + handle.Name() + "'")
+	if common.UseCsv {
+		//writeArrayToCsvFile(handle, elements)
+	} else {
+		writeArrayToJsonFile(handle, elements)
 	}
 }
 
 func CloseOutputFile(handle *os.File) {
+	common.PrintVerbose("Closing output file '" + handle.Name() + "'")
 	handle.Close()
 }

@@ -7,6 +7,6 @@ func GetOrganizationsProjects(organization_id string, per_page int) []map[string
 	//   GET https://api.bugsnag.com/organizations/organization_id/projects
 	var url string = "https://api.bugsnag.com/organizations/" + organization_id + "/projects"
 	common.PrintVerbose("Getting organization projects from API: " + url)
-	var projects []map[string]interface{} = BugsnagGetAllElements(url)
+	var projects []map[string]interface{} = BugsnagGetArray(url)
 	return projects
 }

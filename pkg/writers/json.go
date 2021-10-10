@@ -8,12 +8,24 @@ import (
 	"github.com/xander-jones/bugsnag-exporter/pkg/common"
 )
 
-func writeToJsonFile(handle *os.File, data []map[string]interface{}) {
-	file, err := json.MarshalIndent(data, "", "    ")
+func writeArrayToJsonFile(handle *os.File, elements []map[string]interface{}) {
+	data, err := json.MarshalIndent(elements, "", "    ")
 	if err != nil {
 		common.ExitWithError(1, err)
 	} else {
-		err := ioutil.WriteFile(handle.Name(), file, 0644)
+		err := ioutil.WriteFile(handle.Name(), data, 0644)
+		if err != nil {
+			common.ExitWithError(1, err)
+		}
+	}
+}
+
+func writeObjectToJsonFile(handle *os.File, element map[string]interface{}) {
+	data, err := json.MarshalIndent(element, "", "    ")
+	if err != nil {
+		common.ExitWithError(1, err)
+	} else {
+		err := ioutil.WriteFile(handle.Name(), data, 0644)
 		if err != nil {
 			common.ExitWithError(1, err)
 		}

@@ -66,33 +66,21 @@ func main() {
 					if *events {
 						common.Print("Downloading all events for projectId within filters")
 						events := daa.GetProjectEvents(*projectId)
-						// for _, event := range events {
-						// 	common.Print(fmt.Sprint(event))
-						// }
 						common.Print("Got %d events", len(events))
 					} else {
 						common.Print("Downloading all errors from projectId within filters")
 						errs := daa.GetProjectErrors(*projectId)
-						// for _, err := range errs {
-						// 	common.Print(fmt.Sprint(err))
-						// }
 						common.Print("Got %d errors", len(errs))
 					}
 				} else {
 					if *events {
 						common.Print("Downloading all events for projectId & errorId within filters")
 						events := daa.GetErrorEvents(*projectId, *errorId)
-						// for _, event := range events {
-						// 	common.Print(fmt.Sprint(event))
-						// }
 						common.Print("Got %d events", len(events))
 					} else {
 						common.Print("Downloading error from projectId & errorId within filters")
 						errs := daa.GetError(*projectId, *errorId)
-						// for _, err := range errs {
-						// 	common.Print(fmt.Sprint(err))
-						// }
-						common.Print("Got %d errors", len(errs))
+						common.Print("Got error with %d elements", len(errs))
 					}
 				}
 			}
