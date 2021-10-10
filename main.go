@@ -24,16 +24,16 @@ func main() {
 		Synchronous: true,
 	})
 
-	token := flag.String("token", "", "[REQUIRED][String] Your Bugsnag personal auth token.")
+	token := flag.String("token", "", "[REQUIRED][String] Your Bugsnag personal auth token")
 	getProjectIds := flag.Bool("show-project-ids", false, "[Flag] Use this flag to get a list of project IDs accessible with your token. Overrides any other flags")
 	projectId := flag.String("project-id", "", "[String] The Project ID you wish to download from")
 	errorId := flag.String("error-id", "", "[String] An error ID to download. If provided, downloads all events within filters for this error ID")
 	events := flag.Bool("events", false, "[Flag] Download events rather than error groups when this flag is enabled. Requires --project-id (and optionally --error-id)")
 	//affectedUsers := flag.Bool("affected-users", false, "[Flag] Download a list of users affected by a specific error. Requires --project-id and --error-id")
-	outputDir := flag.String("output-dir", "./", "[String] Directory to store the downloaded file.")
+	outputDir := flag.String("output-dir", "./", "[String] Directory to store the downloaded file")
 	//filters := flag.String("filters", "", "[String] A JSON string array of filters to apply")
 	//rateLimit := flag.Int("rate-limit", 0, "[Int] Set the number of calls to make per minute. Defaults to 0, no rate limit")
-	//fullReport := flag.Bool("full-report", false, "[Flag] Download full reports for each event if available")
+	minimalReports := flag.Bool("minimal", false, "[Flag] Download minimal event reports only for smaller file sizes")
 	useCsv := flag.Bool("csv", false, "[Flag] Output data to file as CSV. Default false, noramally outputs as JSON")
 	noWarn := flag.Bool("no-warn", false, "[Flag] Don't warn me if this call will take more than 10 calls to the API")
 	verbose := flag.Bool("verbose", false, "[Flag] Set the output to be verbose for debugging purposes.")
@@ -43,6 +43,7 @@ func main() {
 	common.NoWarn = *noWarn
 	common.UseCsv = *useCsv
 	common.OutputDir = *outputDir
+	common.MinimalReports = *minimalReports
 
 	if *token == "" {
 		common.ExitWithString(1, "Missing token. Please supply Bugsnag personal auth token with --token flag")

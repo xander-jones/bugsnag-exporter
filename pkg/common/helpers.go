@@ -32,6 +32,11 @@ var UseCsv bool = false
 var OutputDir string = "./"
 
 /*
+	Variable to control whether we should be fetching minimal reports
+*/
+var MinimalReports bool = false
+
+/*
 	Exits the application with the error code given after
 	printing an error message string to the console.
 */

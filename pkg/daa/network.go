@@ -40,7 +40,7 @@ func PrintHttpHeaders(res BugsnagDAAResponse) {
 }
 
 func PrintHttpBody(res BugsnagDAAResponse) {
-	common.PrintVerbose(string(res.body))
+	//common.PrintVerbose(string(res.body))
 }
 
 var client = &http.Client{}
@@ -63,12 +63,12 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 			common.PrintVerbose("Sleeping for " + fmt.Sprint(res.retryAfter) + " seconds")
 			time.Sleep(time.Duration(res.retryAfter) * time.Second)
 		} else if res.status == 200 {
-			var unmarshall_body []map[string]interface{}
-			err := json.Unmarshal([]byte(res.body), &unmarshall_body)
+			var unmarshallBody []map[string]interface{}
+			err := json.Unmarshal([]byte(res.body), &unmarshallBody)
 			if err != nil {
 				common.ExitWithErrorAndString(1, err, "JSON Unmarshalling failed")
 			} else {
-				elements = append(elements, unmarshall_body...)
+				elements = append(elements, unmarshallBody...)
 			}
 			if res.link.url != "" && res.link.rel == "next" {
 				url = res.link.url
