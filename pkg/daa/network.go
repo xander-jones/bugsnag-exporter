@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -54,11 +55,14 @@ var PersonalAuthToken = "" // Personal Auth Token "Go-API"
 	else use BugsnagGetObject()
 */
 func BugsnagGetArray(url string) []map[string]interface{} {
+	var thisCallNo int = 0
+	var warningAccepted bool = false
 	var res BugsnagDAAResponse
 	var elements []map[string]interface{}
 	for {
+		thisCallNo += 1
+		common.PrintVerbose("This is call %d", thisCallNo)
 		res = MakeBugsnagDAAGet(url)
-		// TODO: Calculate whether this call will take > 10 calls overall, and warn based on common.NoWarn flag status.
 		if res.status == 429 {
 			common.PrintVerbose("Sleeping for " + fmt.Sprint(res.retryAfter) + " seconds")
 			time.Sleep(time.Duration(res.retryAfter) * time.Second)
@@ -69,6 +73,12 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 				common.ExitWithErrorAndString(1, err, "JSON Unmarshalling failed")
 			} else {
 				elements = append(elements, unmarshallBody...)
+				var callsRemainingToMake int = calcCallsRemaining(len(elements), res.xTotalCount, len(unmarshallBody))
+				if callsRemainingToMake > 4 && !warningAccepted && !common.NoWarn {
+					if getConfirmation("This request will make " + fmt.Sprint(callsRemainingToMake) + " further API calls. Do you want to continue?") {
+						warningAccepted = true
+					}
+				}
 			}
 			if res.link.url != "" && res.link.rel == "next" {
 				url = res.link.url
@@ -78,6 +88,15 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 		}
 	}
 	return elements
+}
+
+func calcCallsRemaining(elementsDownloaded int, totalElementsToDownload int, elementsOnThisPage int) int {
+	common.PrintVerbose("Downloaded %d of %d elements (including this payload of %d elements)", elementsDownloaded, totalElementsToDownload, elementsOnThisPage)
+	var callsRemainingToMake int = int(math.Ceil(float64(totalElementsToDownload-elementsDownloaded) / float64(elementsOnThisPage)))
+	if elementsDownloaded < totalElementsToDownload {
+		common.PrintVerbose("Need to make another %d calls", callsRemainingToMake)
+	}
+	return callsRemainingToMake
 }
 
 /*
