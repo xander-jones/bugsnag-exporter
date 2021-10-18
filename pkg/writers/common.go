@@ -8,8 +8,10 @@ import (
 )
 
 func CreateNewOutputFile(projectId string, filename string) *os.File {
+	// TODO: Warn user if the file is going to overwrite an old file
 	var outputDirpath string = filepath.Join(common.OutputDir, projectId)
 	common.PrintVerbose("Setting up directory '" + outputDirpath + "' to download data to")
+	// TODO: Check MkdirAll is not destructive where not wanted!
 	err := os.MkdirAll(outputDirpath, os.ModePerm)
 	if err != nil {
 		common.ExitWithError(1, err)
@@ -34,6 +36,7 @@ func CreateNewOutputFile(projectId string, filename string) *os.File {
 func WriteObjectToFile(handle *os.File, element map[string]interface{}) {
 	common.PrintVerbose("Writing object to output file '" + handle.Name() + "'")
 	if common.UseCsv {
+		// TODO: implement this
 		//writeObjectToCsvFile(handle, element)
 	} else {
 		writeObjectToJsonFile(handle, element)
@@ -43,6 +46,7 @@ func WriteObjectToFile(handle *os.File, element map[string]interface{}) {
 func WriteArrayToFile(handle *os.File, elements []map[string]interface{}) {
 	common.PrintVerbose("Writing array to output file '" + handle.Name() + "'")
 	if common.UseCsv {
+		// TODO: implement this
 		//writeArrayToCsvFile(handle, elements)
 	} else {
 		writeArrayToJsonFile(handle, elements)

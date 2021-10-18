@@ -35,7 +35,7 @@ func main() {
 	//rateLimit := flag.Int("rate-limit", 0, "[Int] Set the number of calls to make per minute. Defaults to 0, no rate limit")
 	minimalReports := flag.Bool("minimal", false, "[Flag] Download minimal event reports only for smaller file sizes")
 	useCsv := flag.Bool("csv", false, "[Flag] Output data to file as CSV. Default false, noramally outputs as JSON")
-	noWarn := flag.Bool("no-warn", false, "[Flag] Don't warn me if this call will take more than 10 calls to the API")
+	noWarn := flag.Bool("no-warn", false, "[Flag] Don't warn me if this call will take more than 5 calls to the API")
 	verbose := flag.Bool("verbose", false, "[Flag] Set the output to be verbose for debugging purposes.")
 	flag.Parse()
 
