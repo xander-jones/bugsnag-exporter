@@ -7,23 +7,10 @@
 #
 
 os_archs=(
-    darwin/386
-    darwin/amd64
-    linux/386
-    linux/amd64
-    linux/arm
-    linux/arm64
-    linux/ppc64
-    linux/ppc64le
-    linux/mips
-    linux/mipsle
-    linux/mips64
-    linux/mips64le
-    linux/riscv64
-    linux/s390x
-    windows/386
-    windows/amd64
-    windows/arm
+    darwin/amd64   # macOS Intel 64-bit
+    darwin/arm64   # macOS Apple Silicon 64-bit
+    linux/amd64    # Linux 64-bit
+    windows/amd64  # Windows 64-bit
 )
 
 build_success=()
