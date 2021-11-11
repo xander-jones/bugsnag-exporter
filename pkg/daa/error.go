@@ -7,10 +7,10 @@ import (
 	"github.com/xander-jones/bugsnag-exporter/pkg/writers"
 )
 
-func GetError(projectId string, errorId string) map[string]interface{} {
+func GetError(projectId string, errorId string, filters string) map[string]interface{} {
 	// Docs: https://bugsnagapiv2.docs.apiary.io/#reference/errors/errors/view-an-error
 	//   GET https://api.bugsnag.com/projects/project_id/errors/error_id
-	var url string = addQueryParams("https://api.bugsnag.com/projects/" + projectId + "/errors/" + errorId)
+	var url string = addQueryParams("https://api.bugsnag.com/projects/"+projectId+"/errors/"+errorId, filters)
 	common.PrintVerbose("Getting error from API: " + url)
 	var handle *os.File = writers.CreateNewOutputFile(projectId, "error-"+errorId)
 	var err map[string]interface{} = BugsnagGetObject(url)
@@ -19,10 +19,10 @@ func GetError(projectId string, errorId string) map[string]interface{} {
 	return err
 }
 
-func GetErrorEvents(projectId string, errorId string) []map[string]interface{} {
+func GetErrorEvents(projectId string, errorId string, filters string) []map[string]interface{} {
 	// Docs: https://bugsnagapiv2.docs.apiary.io/#reference/errors/events/list-the-events-on-an-error
 	//   GET https://api.bugsnag.com/projects/project_id/errors/error_id/events
-	var url string = addQueryParams("https://api.bugsnag.com/projects/" + projectId + "/errors/" + errorId + "/events")
+	var url string = addQueryParams("https://api.bugsnag.com/projects/"+projectId+"/errors/"+errorId+"/events", filters)
 	common.PrintVerbose("Getting events from API: " + url)
 	var handle *os.File = writers.CreateNewOutputFile(projectId, "events-of-"+errorId)
 	var events []map[string]interface{} = BugsnagGetArray(url)
@@ -31,7 +31,7 @@ func GetErrorEvents(projectId string, errorId string) []map[string]interface{} {
 	return events
 }
 
-func GetUsersAffected(project_id string, error_id string) []map[string]interface{} {
+func GetUsersAffected(project_id string, error_id string, filters string) []map[string]interface{} {
 	// TODO: Get a list of users affected by an error
 	return nil
 }

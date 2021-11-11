@@ -31,7 +31,7 @@ func main() {
 	events := flag.Bool("events", false, "[Flag] Download events rather than error groups when this flag is enabled. Requires --project-id (and optionally --error-id)")
 	//affectedUsers := flag.Bool("affected-users", false, "[Flag] Download a list of users affected by a specific error. Requires --project-id and --error-id")
 	outputDir := flag.String("output-dir", "./data", "[String] Directory to store the downloaded file")
-	//filters := flag.String("filters", "", "[String] A JSON string array of filters to apply")
+	filters := flag.String("filters", "", "[String] A string array of filters to apply (URL format)")
 	//rateLimit := flag.Int("rate-limit", 0, "[Int] Set the number of calls to make per minute. Defaults to 0, no rate limit")
 	minimalReports := flag.Bool("minimal", false, "[Flag] Download minimal event reports only for smaller file sizes")
 	useCsv := flag.Bool("csv", false, "[Flag] Output data to file as CSV. Default false, noramally outputs as JSON")
@@ -66,21 +66,21 @@ func main() {
 				if *errorId == "" {
 					if *events {
 						common.Print("Downloading all events for projectId within filters")
-						events := daa.GetProjectEvents(*projectId)
+						events := daa.GetProjectEvents(*projectId, *filters)
 						common.Print("Got %d events", len(events))
 					} else {
 						common.Print("Downloading all errors from projectId within filters")
-						errs := daa.GetProjectErrors(*projectId)
+						errs := daa.GetProjectErrors(*projectId, *filters)
 						common.Print("Got %d errors", len(errs))
 					}
 				} else {
 					if *events {
 						common.Print("Downloading all events for projectId & errorId within filters")
-						events := daa.GetErrorEvents(*projectId, *errorId)
+						events := daa.GetErrorEvents(*projectId, *errorId, *filters)
 						common.Print("Got %d events", len(events))
 					} else {
 						common.Print("Downloading error from projectId & errorId within filters")
-						errs := daa.GetError(*projectId, *errorId)
+						errs := daa.GetError(*projectId, *errorId, *filters)
 						common.Print("Got error with %d elements", len(errs))
 					}
 				}
