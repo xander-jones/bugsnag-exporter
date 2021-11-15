@@ -27,10 +27,10 @@ func addQueryParams(url string, filters string) string {
 }
 
 func formatFilters(filters string) string {
-	r := regexp.MustCompile(`\??(filters\[[^]]*\]=[^&]*)&?`)
+	r := regexp.MustCompile(`\??(filters(\[[^]]*\])+=([^&]*))&?`)
 	matches := r.FindAllString(filters, -1)
-	common.PrintVerbose("filters match count: " + fmt.Sprint(len(matches)))
-	common.PrintVerbose("filters: " + fmt.Sprint(matches))
+	common.PrintVerbose("filters count: " + fmt.Sprint(len(matches)))
+	common.PrintVerbose("filters:       " + fmt.Sprint(matches))
 	if matches == nil {
 		return "BAD_FILTERS"
 	} else {
