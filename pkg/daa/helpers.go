@@ -15,20 +15,27 @@ func addQueryParams(url string, filters string) string {
 	if !common.MinimalReports {
 		url += "full_reports=true"
 	}
-	if f := formatFilters(filters); f != "BAD_FILTERS" {
-		url += "&"
-		url += f
-	} else {
-		common.ExitWithString(1, "Filters provided were not valid")
+	if filters != "" {
+		if f := formatFilters(filters); f != "BAD_FILTERS" {
+			url += "&"
+			url += f
+		} else {
+			common.ExitWithString(1, "Filters provided were not valid")
+		}
 	}
 	return url
 }
 
 func formatFilters(filters string) string {
-	r, _ := regexp.Compile("[?&]?(filters([[^]]*)([[^]*])([^]]*])=([^&]+)*)/im")
-	matches := r.FindAllStringSubmatch(filters, -1)
-	common.PrintVerbose(fmt.Sprint(matches))
-	return filters
+	r := regexp.MustCompile(`\??(filters\[[^]]*\]=[^&]*)&?`)
+	matches := r.FindAllString(filters, -1)
+	common.PrintVerbose("filters match count: " + fmt.Sprint(len(matches)))
+	common.PrintVerbose("filters: " + fmt.Sprint(matches))
+	if matches == nil {
+		return "BAD_FILTERS"
+	} else {
+		return filters
+	}
 }
 
 /*
