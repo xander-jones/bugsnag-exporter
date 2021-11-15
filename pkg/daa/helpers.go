@@ -4,18 +4,38 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/xander-jones/bugsnag-exporter/pkg/common"
 )
 
-func addQueryParams(url string) string {
+func addQueryParams(url string, filters string) string {
 	url += "?"
 	if !common.MinimalReports {
 		url += "full_reports=true"
 	}
-	// TODO: Add filters here. Perhaps they should go as the body though to save translating JSON to URL query.
+	if filters != "" {
+		if f := formatFilters(filters); f != "BAD_FILTERS" {
+			url += "&"
+			url += f
+		} else {
+			common.ExitWithString(1, "Filters provided were not valid")
+		}
+	}
 	return url
+}
+
+func formatFilters(filters string) string {
+	r := regexp.MustCompile(`\??(filters(\[[^]]*\])+=([^&]*))&?`)
+	matches := r.FindAllString(filters, -1)
+	common.PrintVerbose("filters count: " + fmt.Sprint(len(matches)))
+	common.PrintVerbose("filters:       " + fmt.Sprint(matches))
+	if matches == nil {
+		return "BAD_FILTERS"
+	} else {
+		return filters
+	}
 }
 
 /*
