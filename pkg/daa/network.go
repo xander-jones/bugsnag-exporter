@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 	"time"
@@ -33,11 +34,19 @@ type BugsnagDAANextLink struct {
 }
 
 func PrintHttpHeaders(res BugsnagDAAResponse) {
-	common.PrintVerbose("X-Total-Count: " + fmt.Sprint(res.xTotalCount))
-	common.PrintVerbose("Ratelimit:     " + fmt.Sprint(res.rateLimit.limit))
-	common.PrintVerbose("Remaining:     " + fmt.Sprint(res.rateLimit.remaining))
-	common.PrintVerbose("Link:          " + fmt.Sprint(res.link))
-	common.PrintVerbose("Retry-After:   " + fmt.Sprint(res.retryAfter))
+	common.PrintVerbose("X-Total-Count: %d", res.xTotalCount)
+	common.PrintVerbose("Ratelimit:     %d", res.rateLimit.limit)
+	common.PrintVerbose("Remaining:     %d", res.rateLimit.remaining)
+	common.PrintVerbose("Link:          %s", queryUnescape(res.link.url))
+	common.PrintVerbose("Retry-After:   %d", res.retryAfter)
+}
+
+func queryUnescape(encodedValue string) string {
+	decodedValue, err := url.QueryUnescape(encodedValue)
+	if err != nil {
+		common.ExitWithError(1, err)
+	}
+	return decodedValue
 }
 
 func PrintHttpBody(res BugsnagDAAResponse) {
@@ -58,13 +67,13 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 	var thisCallNo int = 0
 	var warningAccepted bool = false
 	var res BugsnagDAAResponse
+	var totalCallsRequired int = -1
 	var elements []map[string]interface{}
 	for {
 		thisCallNo += 1
-		common.PrintVerbose("This is call %d", thisCallNo)
 		res = MakeBugsnagDAAGet(url)
 		if res.status == 429 {
-			common.PrintVerbose("Sleeping for " + fmt.Sprint(res.retryAfter) + " seconds")
+			common.Print("API rate limit reached: Sleeping for %d seconds", res.retryAfter)
 			time.Sleep(time.Duration(res.retryAfter) * time.Second)
 		} else if res.status == 200 {
 			var unmarshallBody []map[string]interface{}
@@ -74,11 +83,17 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 			} else {
 				elements = append(elements, unmarshallBody...)
 				var callsRemainingToMake int = calcCallsRemaining(len(elements), res.xTotalCount, len(unmarshallBody))
+				if totalCallsRequired == -1 {
+					// only update this value on the first pass as subsequent calls might have < a full page size
+					// (i.e. the last call which would disruput progress calculations)
+					totalCallsRequired = callsRemainingToMake + 1
+				}
 				if callsRemainingToMake > 4 && !warningAccepted && !common.NoWarn {
 					if getConfirmation("This request will make " + fmt.Sprint(callsRemainingToMake) + " further API calls. Do you want to continue?") {
 						warningAccepted = true
 					}
 				}
+				common.Print("Downloaded data: %d of %d (%.1f%%)", thisCallNo, totalCallsRequired, float64((float64(thisCallNo)/float64(totalCallsRequired))*100))
 			}
 			if res.link.url != "" && res.link.rel == "next" {
 				url = res.link.url
@@ -93,9 +108,6 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 func calcCallsRemaining(elementsDownloaded int, totalElementsToDownload int, elementsOnThisPage int) int {
 	common.PrintVerbose("Downloaded %d of %d elements (including this payload of %d elements)", elementsDownloaded, totalElementsToDownload, elementsOnThisPage)
 	var callsRemainingToMake int = int(math.Ceil(float64(totalElementsToDownload-elementsDownloaded) / float64(elementsOnThisPage)))
-	if elementsDownloaded < totalElementsToDownload {
-		common.PrintVerbose("Need to make another %d calls", callsRemainingToMake)
-	}
 	return callsRemainingToMake
 }
 
@@ -110,7 +122,7 @@ func BugsnagGetObject(url string) map[string]interface{} {
 	var element map[string]interface{}
 	res = MakeBugsnagDAAGet(url)
 	if res.status == 429 {
-		common.PrintVerbose("Sleeping for " + fmt.Sprint(res.retryAfter) + " seconds")
+		common.Print("API rate limit reached: Sleeping for %d seconds", res.retryAfter)
 		time.Sleep(time.Duration(res.retryAfter) * time.Second)
 	} else if res.status == 200 {
 		err := json.Unmarshal([]byte(res.body), &element)
