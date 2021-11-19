@@ -16,6 +16,7 @@ func GetError(projectId string, errorId string, filters string) map[string]inter
 	var err map[string]interface{} = BugsnagGetObject(url)
 	writers.WriteObjectToFile(handle, err)
 	writers.CloseOutputFile(handle)
+	common.Print("Downloaded error. Saved to %s", handle.Name())
 	return err
 }
 
@@ -28,6 +29,7 @@ func GetErrorEvents(projectId string, errorId string, filters string) []map[stri
 	var events []map[string]interface{} = BugsnagGetArray(url)
 	writers.WriteArrayToFile(handle, events)
 	writers.CloseOutputFile(handle)
+	common.Print("Downloaded %d events from error. Saved to %s", len(events), handle.Name())
 	return events
 }
 

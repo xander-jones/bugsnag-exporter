@@ -66,22 +66,18 @@ func main() {
 				if *errorId == "" {
 					if *events {
 						common.Print("Downloading all events for projectId within filters")
-						events := daa.GetProjectEvents(*projectId, *filters)
-						common.Print("Got %d events", len(events))
+						daa.GetProjectEvents(*projectId, *filters)
 					} else {
 						common.Print("Downloading all errors from projectId within filters")
-						errs := daa.GetProjectErrors(*projectId, *filters)
-						common.Print("Got %d errors", len(errs))
+						daa.GetProjectErrors(*projectId, *filters)
 					}
 				} else {
 					if *events {
 						common.Print("Downloading all events for projectId & errorId within filters")
-						events := daa.GetErrorEvents(*projectId, *errorId, *filters)
-						common.Print("Got %d events", len(events))
+						daa.GetErrorEvents(*projectId, *errorId, *filters)
 					} else {
 						common.Print("Downloading error from projectId & errorId within filters")
-						errs := daa.GetError(*projectId, *errorId, *filters)
-						common.Print("Got error with %d elements", len(errs))
+						daa.GetError(*projectId, *errorId, *filters)
 					}
 				}
 			}
