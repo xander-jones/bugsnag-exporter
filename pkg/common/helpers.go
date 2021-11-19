@@ -68,17 +68,17 @@ func ExitWithErrorAndString(errorCode int, err error, errorMessage string) {
 	Prints a message to the console, can take in arguments
 	after the initial message so you can treat this as a Sprintf()
 */
-func Print(message string, args ...interface{}) {
-	fmt.Printf("[bugsnag-exporter] "+message+"\r\n", args...)
+func Print(format string, args ...interface{}) {
+	fmt.Printf("[bugsnag-exporter] "+format+"\r\n", args...)
 }
 
 /*
 	Prints a message to the console, in the same way as Print()
 	but ONLY if `Verbose` is set to true
 */
-func PrintVerbose(message string, args ...interface{}) {
+func PrintVerbose(format string, args ...interface{}) {
 	if Verbose {
-		fmt.Printf("[b2c----VERBOSE] "+message+"\r\n", args...)
+		fmt.Printf("[b-e-verbose-----] "+format+"\r\n", args...)
 	}
 }
 
