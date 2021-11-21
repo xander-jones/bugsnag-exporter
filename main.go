@@ -26,10 +26,10 @@ func main() {
 
 	token := flag.String("token", "", "[REQUIRED][String] Your Bugsnag personal auth token")
 	getProjectIds := flag.Bool("show-project-ids", false, "[Flag] Use this flag to get a list of project IDs accessible with your token. Overrides any other flags")
+	affectedUsers := flag.Bool("affected-users", false, "[Flag] Download a list of users affected by a specific error. Requires --project-id and --error-id")
 	projectId := flag.String("project-id", "", "[String] The Project ID you wish to download from")
 	errorId := flag.String("error-id", "", "[String] An error ID to download. If provided, downloads all events within filters for this error ID")
 	events := flag.Bool("events", false, "[Flag] Download events rather than error groups when this flag is enabled. Requires --project-id (and optionally --error-id)")
-	//affectedUsers := flag.Bool("affected-users", false, "[Flag] Download a list of users affected by a specific error. Requires --project-id and --error-id")
 	outputDir := flag.String("output-dir", "./data", "[String] Directory to store the downloaded file")
 	filters := flag.String("filters", "", "[String] A string array of filters to apply (URL format)")
 	//rateLimit := flag.Int("rate-limit", 0, "[Int] Set the number of calls to make per minute. Defaults to 0, no rate limit")
@@ -58,6 +58,13 @@ func main() {
 				for _, proj := range projects {
 					common.Print("  > " + fmt.Sprint(proj["name"]) + " [" + fmt.Sprint(proj["id"]) + "]")
 				}
+			}
+		} else if *affectedUsers {
+			if *errorId != "" && *projectId != "" {
+				common.Print("Downloading list of users affected by errorId '%s' on projectId '%s'", *errorId, *projectId)
+				daa.GetAffectedUsers(*projectId, *errorId, *filters)
+			} else {
+				common.ExitWithString(1, "--affected-users requires --project-id and --error-id to get list of affected users")
 			}
 		} else {
 			if *projectId == "" {

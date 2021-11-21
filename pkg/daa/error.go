@@ -33,7 +33,15 @@ func GetErrorEvents(projectId string, errorId string, filters string) []map[stri
 	return events
 }
 
-func GetUsersAffected(project_id string, error_id string, filters string) []map[string]interface{} {
-	// TODO: Get a list of users affected by an error
-	return nil
+func GetAffectedUsers(projectId string, errorId string, filters string) []map[string]interface{} {
+	// Docs https://bugsnagapiv2.docs.apiary.io/#reference/errors/pivots/list-values-of-a-pivot-on-an-error
+	//  GET https://api.bugsnag.com/projects/project_id/errors/error_id/pivots/event_field_display_id/values
+	var url string = addQueryParams("https://api.bugsnag.com/projects/"+projectId+"/errors/"+errorId+"/pivots/user.id/values", filters)
+	common.PrintVerbose("Getting affected users from API: %s", url)
+	var handle *os.File = writers.CreateNewOutputFile(projectId, "users-affected-by-errorId-"+errorId)
+	var events []map[string]interface{} = BugsnagGetArray(url)
+	writers.WriteArrayToFile(handle, events)
+	writers.CloseOutputFile(handle)
+	common.Print("Downloaded information about %d users affected by errorId '%s'. Saved to '%s'", len(events), errorId, handle.Name())
+	return events
 }
