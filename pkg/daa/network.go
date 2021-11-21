@@ -100,6 +100,10 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 			} else {
 				break
 			}
+		} else {
+			common.Print("An error (HTTP/%d) occured when making a call to %s", res.status, url)
+			common.Print("%s", res.body)
+			common.ExitWithString(1, "An error status was returned from the Bugsnag Data Access API")
 		}
 	}
 	return elements
@@ -129,6 +133,10 @@ func BugsnagGetObject(url string) map[string]interface{} {
 		if err != nil {
 			common.ExitWithErrorAndString(1, err, "JSON Unmarshalling failed")
 		}
+	} else {
+		common.Print("An error (HTTP/%d) occured when making a call to %s", res.status, url)
+		common.Print("%s", res.body)
+		common.ExitWithString(1, "An error status was returned from the Bugsnag Data Access API")
 	}
 	return element
 }
