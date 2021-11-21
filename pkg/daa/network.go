@@ -93,7 +93,7 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 						warningAccepted = true
 					}
 				}
-				common.Print("Downloaded data: %d of %d (%.1f%%)", thisCallNo, totalCallsRequired, float64((float64(thisCallNo)/float64(totalCallsRequired))*100))
+				common.Print("Downloaded data page: %d of %d (%.1f%%)", thisCallNo, totalCallsRequired, float64((float64(thisCallNo)/float64(totalCallsRequired))*100))
 			}
 			if res.link.url != "" && res.link.rel == "next" {
 				url = res.link.url
@@ -101,8 +101,9 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 				break
 			}
 		} else {
-			common.Print("An error (HTTP/%d) occured when making a call to %s", res.status, url)
+			common.Print("An unexpected error (HTTP/%d) occured when making a call to %s", res.status, url)
 			common.Print("%s", res.body)
+			// bugsnag.Notify()
 			common.ExitWithString(1, "An error status was returned from the Bugsnag Data Access API")
 		}
 	}
@@ -111,8 +112,12 @@ func BugsnagGetArray(url string) []map[string]interface{} {
 
 func calcCallsRemaining(elementsDownloaded int, totalElementsToDownload int, elementsOnThisPage int) int {
 	common.PrintVerbose("Downloaded %d of %d elements (including this payload of %d elements)", elementsDownloaded, totalElementsToDownload, elementsOnThisPage)
-	var callsRemainingToMake int = int(math.Ceil(float64(totalElementsToDownload-elementsDownloaded) / float64(elementsOnThisPage)))
-	return callsRemainingToMake
+	if elementsOnThisPage == 0 {
+		return 0
+	} else {
+		var callsRemainingToMake int = int(math.Ceil(float64(totalElementsToDownload-elementsDownloaded) / float64(elementsOnThisPage)))
+		return callsRemainingToMake
+	}
 }
 
 /*
